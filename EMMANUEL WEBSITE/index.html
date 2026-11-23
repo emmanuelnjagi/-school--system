@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>St Benedict - Karau | School System</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box;font-family:Inter,Arial}
+body{margin:0;background:#0a4d2a;color:#fff;text-align:center;padding:20px}
+.box{background:#fff;color:#222;max-width:520px;margin:18px auto;padding:22px;border-radius:18px;text-align:left}
+.btn{display:block;width:100%;padding:15px;margin:10px 0;border:0;border-radius:12px;font-weight:700;font-size:16px;cursor:pointer;color:#fff}
+.a{background:#15803d}.t{background:#1e40af}.f{background:#7c3aed}.s{background:#ea580c}
+input,select{width:100%;padding:13px;margin:8px 0;border:1px solid #ddd;border-radius:10px;font-size:15px}
+.link{color:#1e40af;cursor:pointer;font-weight:700;text-align:center;display:block;margin-top:10px}
+#msg{font-size:13px;background:#fef9c3;padding:10px;border-radius:10px;text-align:center}
+</style></head>
+<body>
+<div style="font-size:50px">🎓</div>
+<h1>ST BENEDICT - KARAU SECONDARY SCHOOL</h1><p style="color:#f2d67c">School Management System</p>
+
+<div class="box" id="authBox">
+  <h2 style="margin:0;text-align:center" id="authTitle">Login to Your Account</h2>
+  <p id="msg">Welcome! Login or Create Account.</p>
+  <div id="registerFields" style="display:none">
+    <input id="regName" placeholder="Full Name">
+    <select id="regRole">
+      <option value="student">Student / Parent</option>
+      <option value="teacher">Teacher</option>
+      <option value="finance">Finance</option>
+      <option value="admin">Admin</option>
+    </select>
+  </div>
+  <input id="email" type="email" placeholder="Gmail Address e.g. john@gmail.com">
+  <input id="password" type="password" placeholder="Password (min 6 characters)">
+  <button class="btn a" id="mainBtn" onclick="handleAuth()">Login</button>
+  <span class="link" onclick="toggleAuth()" id="toggleLink">Don't have an account? Create Account</span>
+  <span class="link" onclick="forgotPassword()" style="color:#ea580c">Forgot Password? Reset via Gmail</span>
+</div>
+
+<div class="box" id="dashBox" style="display:none;text-align:center">
+  <h2>Welcome, <span id="userName"></span></h2>
+  <p id="userEmail" style="color:#666"></p>
+  <p id="status" style="font-size:13px;background:#f0fdf4;padding:10px;border-radius:10px"></p>
+  <button class="btn a" onclick="location.href='Admin.html'">🛡️ Admin Dashboard</button>
+  <button class="btn t" onclick="location.href='feacher.html'">👩‍🏫 Teacher Dashboard</button>
+  <button class="btn f" onclick="location.href='finance.html'">💰 Finance Dashboard</button>
+  <button class="btn s" onclick="location.href='student.html'">🎓 Student / Parent Dashboard</button>
+  <hr>
+  <button onclick="logout()" style="padding:12px 18px;border-radius:10px;border:1px solid #ddd;background:#fff;font-weight:700">🚪 Logout</button>
+</div>
+
+<script>
+// ===== SUPABASE CONFIG - FIXED =====
+const SUPABASE_URL = "https://zdtmalfyfokstypgjtfo.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpkdG1hbGZ5Zm9rc3R5cGdqdGZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU0MjczMTcsImV4cCI6MjExMTAwMzMxN30.QXioRDQGLKpzTPjMkb9HoM6vpQj2lQOYboJfEogW8fw";
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let isRegister = false;
+
+function toggleAuth(){
+  isRegister = !isRegister;
+  document.getElementById('registerFields').style.display = isRegister ? 'block' : 'none';
+  document.getElementById('authTitle').innerText = isRegister ? 'Create Account' : 'Login to Your Account';
+  document.getElementById('mainBtn').innerText = isRegister ? 'Create Account' : 'Login';
+  document.getElementById('toggleLink').innerText = isRegister ? 'Already have an account? Login' : "Don't have an account? Create Account";
+}
+
+async function handleAuth(){
+  const email = document.getElementById('email').value.trim().toLowerCase();
+  const pass = document.getElementById('password').value;
+  const name = document.getElementById('regName').value.trim();
+  const role = document.getElementById('regRole').value;
+  const msg = document.getElementById('msg');
+
+  if(!email || !pass){ msg.innerText = "❌ Enter email and password"; return; }
+  msg.innerText = "⏳ Please wait... Connecting...";
+
+  try {
+    if(isRegister){
+      if(!name){ msg.innerText = "❌ Enter full name"; return; }
+      const { data, error } = await supabaseClient.auth.signUp({ email, password: pass });
+      if(error) throw error;
+      if(data.user){
+        const { error: profileError } = await supabaseClient.from('profiles').insert([{ id: data.user.id, full_name: name, email: email, role: role }]);
+        if(profileError) console.log("Profile error:", profileError.message);
+      }
+      msg.innerText = "✅ Account Created! Check your Gmail to confirm, then Login.";
+      alert('Account Created! Check your Gmail inbox to confirm, then Login.');
+      toggleAuth();
+    } else {
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password: pass });
+      if(error) throw error;
+      msg.innerText = "✅ Login Success!";
+      checkSession();
+    }
+  } catch(e){
+    msg.innerText = "❌ " + e.message;
+    alert("Error: " + e.message);
+  }
+}
+
+async function forgotPassword(){
+  const email = document.getElementById('email').value.trim();
+  if(!email) return alert('Enter your Gmail first');
+  const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.href
+  });
+  if(error) alert(error.message);
+  else alert('Password reset link sent to your Gmail. Check inbox / spam.');
+}
+
+async function logout(){
+  await supabaseClient.auth.signOut();
+  location.reload();
+}
+
+async function checkSession(){
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if(session){
+    document.getElementById('authBox').style.display = 'none';
+    document.getElementById('dashBox').style.display = 'block';
+    const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', session.user.id).single();
+    document.getElementById('userName').innerText = profile?.full_name || session.user.email;
+    document.getElementById('userEmail').innerText = session.user.email + ' • ' + (profile?.role || '');
+    document.getElementById('status').innerText = '✅ Logged in via Supabase | Email Confirmed: ' + (session.user.email_confirmed_at ? 'Yes' : 'No - Check Gmail');
+  } else {
+    document.getElementById('authBox').style.display = 'block';
+    document.getElementById('dashBox').style.display = 'none';
+  }
+}
+
+supabaseClient.auth.onAuthStateChange(() => checkSession());
+checkSession();
+</script>
+</body></html>

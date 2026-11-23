@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>St Benedict - Karau | Teacher</title>
+<style>
+*{box-sizing:border-box;font-family:Inter,Arial}body{margin:0;background:#f3f4f6}
+header{background:#1e3a8a;color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+header h1{font-size:17px;margin:0}header p{color:#bfdbfe;margin:2px 0 0;font-size:12px}
+.btn{background:#1e40af;color:#fff;border:0;padding:10px 16px;border-radius:10px;cursor:pointer;font-weight:700}
+.btn-outline{background:#fff;border:1px solid #1e40af;color:#1e40af;padding:9px 14px;border-radius:10px;cursor:pointer;font-weight:600}
+.backBtn{background:#fff;color:#1e3a8a;border:0;padding:9px 14px;border-radius:10px;cursor:pointer;font-weight:700}.backBtn:disabled{opacity:.4}
+.wrap{display:flex}.side{width:260px;background:#fff;margin:14px;padding:14px;border-radius:14px;height:fit-content}.side div{padding:11px;border-radius:10px;cursor:pointer}.side .active{background:#dbeafe;font-weight:700;border-left:4px solid #1e40af}
+.main{flex:1;margin:14px 14px 14px 0}.card{background:#fff;border-radius:16px;padding:18px;box-shadow:0 2px 10px #0001;margin-bottom:16px}
+table{width:100%;border-collapse:collapse}th{background:#f8fafc;text-align:left;padding:10px 8px;font-size:12px;color:#334155}td{padding:10px 8px;border-bottom:1px solid #f1f5f9;font-size:13px;vertical-align:top}
+.pill{background:#dcfce7;color:#166534;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block}.pill.blue{background:#dbeafe;color:#1e40af}.pill.amber{background:#fef3c7;color:#92400e}
+.avatar{width:34px;height:34px;border-radius:50%;background:#dbeafe;color:#1e40af;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;margin-right:8px}
+input,select,textarea{width:100%;padding:10px;margin:6px 0 10px;border:1px solid #ddd;border-radius:10px;outline:none}input.small{padding:7px;width:70px}
+.stat{display:flex;gap:12px;flex-wrap:wrap}.stat>div{flex:1;min-width:130px;background:#fff;border-radius:14px;padding:14px;box-shadow:0 2px 8px #0001}.stat b{font-size:22px}.stat small{color:#666}
+.chip{border:1px solid #e2e8f0;background:#fff;padding:6px 10px;border-radius:20px;cursor:pointer;font-size:13px}
+.empty{text-align:center;color:#94a3b8;padding:16px}
+#loginScreen{position:fixed;inset:0;background:#1e3a8a;display:flex;align-items:center;justify-content:center;z-index:100;padding:16px}
+.loginBox{background:#fff;width:100%;max-width:420px;border-radius:18px;padding:28px;box-shadow:0 10px 30px #0004;text-align:center}
+.loginBox h1{color:#1e3a8a;margin:4px 0}.loginBox p{color:#666;font-size:13px}
+#app{display:none}
+.step{background:#eff6ff;border:2px solid #bfdbfe;padding:14px;border-radius:12px;margin:10px 0}
+</style></head>
+<body>
+<div id="loginScreen"><div class="loginBox"><div style="font-size:44px">👩‍🏫</div><h1>ST BENEDICT - KARAU</h1><p>Teacher Login</p><label style="text-align:left;display:block"><b>Email</b></label><input id="loginEmail" value="teacher@stbenedict.ac.ke"><label style="text-align:left;display:block"><b>Password</b></label><input id="loginPass" type="password" value="teacher123"><button class="btn" style="width:100%;padding:13px;font-size:16px" onclick="doLogin()">Login →</button><p id="loginErr" style="color:red;font-weight:700"></p><p style="font-size:12px;background:#f8fafc;padding:10px;border-radius:10px">Test: teacher@stbenedict.ac.ke / teacher123<br>Real password is the one Admin created for you.</p></div></div>
+
+<div id="app">
+<header><div style="display:flex;align-items:center;gap:10px"><button class="backBtn" id="backBtn" onclick="goBack()" disabled>← Back</button><div><h1>ST BENEDICT SECONDARY SCHOOL - KARAU</h1><p>Teacher Dashboard • <span id="teacherNameShow">Teacher</span> • <span id="teacherEmailShow"></span></p></div></div><div style="display:flex;gap:8px"><button class="btn-outline" style="background:#fff" onclick="show('settings')">⚙️ Change My Password</button><button class="btn-outline" style="background:#fff" onclick="logout()">Logout</button></div></header>
+<button class="btn-outline" style="background:#fff" onclick="location.href='index.html'">🏠 Home</button>
+
+<div class="wrap"><div class="side">
+<div style="font-size:11px;color:#999;font-weight:700">MAIN</div>
+<div class="active" onclick="show('dash',this)">🏠 Dashboard</div>
+<div onclick="show('results',this)">📊 Send Results to Admin</div>
+<div style="font-size:11px;color:#999;font-weight:700;margin-top:10px">COMMUNICATION</div>
+<div onclick="show('notifs',this)">🔔 Notifications from Admin <b id="notifCountSide" style="background:#ef4444;color:#fff;padding:2px 8px;border-radius:20px">0</b></div>
+<div style="font-size:11px;color:#999;font-weight:700;margin-top:10px">ACCOUNT</div>
+<div onclick="show('settings',this)">⚙️ Change My Password</div>
+<div style="background:#eff6ff;padding:10px;border-radius:10px;margin-top:10px"><b>My Assignment - As Given By Admin</b><br><span id="myAssign">Loading assignment from Admin...</span><br><small>If Admin changes it, it changes here automatically.</small></div>
+<div style="background:#fef9c3;padding:10px;border-radius:10px;margin-top:10px"><b>Academic Year: <span id="yearTxt">2024/2025</span></b><br>Term <span id="termTxt">2</span></div></div>
+
+<div class="main">
+<div id="dash">
+<h2 style="margin:0">Welcome back, <span id="welcomeName">Teacher</span> 👋</h2>
+<p style="font-size:13px;color:#666">Here is your work today.</p>
+<div class="stat"><div>📊<br><b id="sentResults">0</b><br><small>Result Lists Sent</small></div><div>⏳<br><b id="pendingCount">0</b><br><small>Waiting Admin Approval</small></div><div>✅<br><b id="approvedCount">0</b><br><small>Approved by Admin</small></div><div>👨‍🎓<br><b id="totalStu">0</b><br><small>Students in Admin Records</small></div></div>
+<div class="card" style="display:flex;gap:8px;flex-wrap:wrap"><b style="width:100%">⚡ Quick Actions:</b><button class="chip" onclick="show('results')">📊 Send Results to Admin →</button><button class="chip" onclick="show('notifs')">🔔 Notifications from Admin</button></div>
+
+<div class="card"><h3 style="margin:0">🔔 Notifications from Admin</h3><p style="font-size:12px;color:#666">This is where Admin's notifications will appear. When Admin sends to ALL or to Teachers, it shows here.</p><div id="dashNotifList"></div><button class="btn-outline" onclick="show('notifs')">View All Notifications →</button></div>
+
+<div class="card"><h3 style="margin:0">How to Send Results</h3><p style="font-size:13px;line-height:1.7"><b>1.</b> Choose <b>Grade + Stream</b> → Only your assigned Grade / Stream shows<br><b>2.</b> Subject is <b>already fixed</b> to what Admin assigned you<br><b>3.</b> Choose <b>Term 1 / 2 / 3</b> + <b>Opener / Mid-Term / End of Term</b><br><b>4.</b> Enter <b>Exam mark</b> - Add CAT / Assignment only if you want as Additional Mark<br><b>5.</b> Provide <b>Formula</b> → System shows Final + CBC Grade (EE / ME / AE / BE)<br><b>6.</b> Submit list to Admin for Approval</p></div>
+<div class="card"><h3 style="margin:0">Sent Lists - Waiting / Approved / Rejected</h3><p style="font-size:12px;color:#666">After you view Approved / Rejected, you can delete it from your list.</p><button class="btn-outline" onclick="loadSentHistory()">🔄 Refresh Status from Admin</button> <button class="btn-outline" style="border-color:#ef4444;color:#ef4444" onclick="clearApprovedRejected()">🗑️ Clear All Approved / Rejected</button><div id="sentHistory"><p style="color:#666">No lists sent yet.</p></div></div></div>
+
+<div id="notifs" style="display:none"><div class="card"><h2>🔔 Notifications from Admin</h2><p style="font-size:13px;color:#666">All messages Admin sent to Teachers / ALL appear here. You can delete Approval / Rejection notifications after reading.</p><button class="btn-outline" onclick="markAllRead()">Mark All As Read</button><button class="btn-outline" onclick="loadNotifications()">🔄 Refresh</button><div id="notifList"></div></div><button class="btn-outline" onclick="goBack()">← Back</button></div>
+
+<div id="results" style="display:none">
+<div class="card"><h2 style="margin:0">📊 Send Results to Admin for Approval</h2><p style="font-size:13px;color:#666">Grade + Stream → Subject (fixed by Admin) → Term → Exam Type → Marks + Formula → Final CBC Grade → Submit</p>
+<div class="step"><b>STEP 1: Which Grade + Stream? (Only Your Assigned Grade / Stream)</b><div style="display:flex;gap:8px"><select id="selGrade" onchange="updateFormulaAndReload()"><option value="">-- Select Grade --</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select><select id="selStream" onchange="updateFormulaAndReload()"><option value="">-- Select Stream --</option><option>10A</option><option>10B</option><option>11A</option><option>11B</option><option>12A</option><option>12B</option></select></div><p id="gradeInfo" style="font-size:12px;color:#666"></p><p id="assignNote" style="font-size:12px;background:#fef9c3;padding:8px;border-radius:8px">Waiting for Admin assignment...</p></div>
+<div class="step"><b>STEP 2: Which Subject? (Fixed By Admin - You Cannot Change)</b><select id="selSubject"><option>Biology</option></select><p style="font-size:12px;color:#666">🔒 Subject is locked to Admin assignment. If Admin changes it, it changes here.</p></div>
+<div class="step"><b>STEP 3: Which Term?</b><div style="display:flex;gap:8px"><select id="selTerm"><option>Term 1</option><option selected>Term 2</option><option>Term 3</option></select><select id="selExamType"><option>Opener Exam</option><option>Mid-Term Exam</option><option selected>End of Term Exam</option></select></div></div>
+<div class="step"><b>STEP 4: Formula - Teacher Provides Formula</b><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span>Exam =</span><input id="examWeight" type="number" value="100" class="small"> <span>%</span><span id="formulaPreview" style="background:#fef9c3;padding:6px 10px;border-radius:20px;font-weight:700">Final = Exam 100%</span><button class="btn-outline" onclick="updateFormulaAndReload()">Update Formula</button></div><label><b>Additional Mark Type (Optional) - CAT goes here</b></label><select id="extraType" onchange="updateFormulaAndReload()"><option value="">No Additional Mark - Exam Only</option><option>CAT 1</option><option>CAT 2</option><option>Assignment</option><option>Practical</option><option>Project</option><option>Quiz</option></select><p style="font-size:12px">Additional weight: <input id="extraWeight" type="number" value="0" class="small"> % <small>Example: Exam 70% + CAT 1 30% - Change Exam to 70 and Additional to 30, then click Update</small></p><button class="btn-outline" onclick="updateFormulaAndReload()">🔄 Load / Refresh Student List</button><p style="font-size:12px;color:#666">Both buttons do the same: Update Formula + Reload List together.</p></div>
+<div class="card"><h3 style="margin:0">STEP 5: Student List - From Admin Dashboard</h3><div style="overflow:auto"><table id="markTbl"><tr><th>Student</th><th>ADM No</th><th>Pathway</th><th>Stream</th><th>Exam /100</th><th id="extraTh" style="display:none">Additional</th><th>Final /100</th><th>Grade (CBC)</th><th>+ Add Mark</th></tr></table></div><div class="empty" id="markEmpty">👆 Select Grade + Stream first - list will come from Admin Dashboard.</div></div>
+<div class="card"><h3>STEP 6: Preview - List to be Submitted to Admin</h3><div style="background:#fffbe6;padding:12px;border-radius:10px"><b id="previewTitle">Grade: - | Subject: - | Term: - | Exam: -</b><br><span id="previewFormula">Formula: Exam 100%</span><br><span id="previewCount">0 students</span><br><small>CBC: EE = 80-100 Exceeding | ME = 60-79 Meeting | AE = 40-59 Approaching | BE = Below 40</small></div><div id="previewTable"></div><button class="btn" style="width:100%;padding:14px;font-size:16px" onclick="submitToAdmin()">📤 Submit This List to Admin for Approval →</button><p id="submitMsg" style="font-weight:700"></p></div>
+</div><button class="btn-outline" onclick="goBack()">← Back</button></div>
+
+<div id="settings" style="display:none"><div class="card"><h2>⚙️ Change My Password</h2><label><b>Enter Your Email</b></label><input id="chgEmail" value="teacher@stbenedict.ac.ke"><label><b>Current Password</b></label><input id="chgOld" type="password"><label><b>New Password</b></label><input id="chgNew" type="password"><label><b>Confirm New Password</b></label><input id="chgConfirm" type="password"><button class="btn" style="width:100%;padding:13px" onclick="changePass()">🔒 Change Password</button><p id="chgMsg" style="font-weight:700"></p></div><button class="btn-outline" onclick="goBack()">← Back</button></div>
+</div></div></div>
+
+<script>
+let TEACHER_EMAIL=localStorage.getItem('stb_teacher_email')||'teacher@stbenedict.ac.ke';let TEACHER_PASS=localStorage.getItem('stb_teacher_pass')||'teacher123';
+
+function getNameFromEmail(email){
+  let names=JSON.parse(localStorage.getItem('stb_user_names')||'{}');
+  if(names[email.toLowerCase()]) return names[email.toLowerCase()];
+  let user=email.split('@')[0];
+  user=user.replace(/[._-]/g,' ');
+  return user.split(' ').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ');
+}
+function getMyAssignment(){
+  let myEmail=document.getElementById('loginEmail').value.trim().toLowerCase();
+  let assigns={}; try{assigns=JSON.parse(localStorage.getItem('stb_teacher_assigns')||'{}')}catch(e){}
+  let raw=assigns[myEmail]||assigns['teacher@stbenedict.ac.ke']||localStorage.getItem('stb_teacher_assign')||'';
+  if(!raw) return null;
+  let text=raw.replace(/<br>/g,' ').replace(/<[^>]+>/g,' ');
+  let grade=(text.match(/Grade\s*\d+/i)||[''])[0];
+  let streamMatch=text.match(/\b(\d+[A-Z])\b/);
+  let stream=streamMatch?streamMatch[1]:'';
+  let subject=''; let allSubjects=['Biology','Chemistry','Physics','Mathematics','English','Kiswahili','History','Geography','CRE','Business Studies','Music','Art','Physical Education','Home Science','Business'];
+  for(let s of allSubjects){ if(text.toLowerCase().includes(s.toLowerCase())){ subject=s; break; } }
+  let pathway=(text.match(/STEM|Social Sciences|Arts & Sports Science/i)||[''])[0];
+  return {raw,grade,stream,subject,pathway};
+}
+function applyAssignmentRestrictions(){
+  let a=getMyAssignment();
+  let note=document.getElementById('assignNote');
+  if(!a||!a.grade){
+    if(note) note.innerHTML='⚠️ No assignment yet from Admin. Showing all Grades / Streams. Ask Admin to assign you in Teachers & Roles.';
+    return;
+  }
+  if(note) note.innerHTML='✅ Your Assignment: <b>'+a.grade+' - '+a.stream+'</b> | Subject: <b>'+(a.subject||'Biology')+'</b> | Pathway: '+(a.pathway||'-')+'<br><small>You can only enter marks for this subject / grade / stream.</small>';
+  let gSel=document.getElementById('selGrade');
+  gSel.innerHTML='<option value="">-- Select Grade --</option><option>'+a.grade+'</option>';
+  gSel.value=a.grade;
+  let sSel=document.getElementById('selStream');
+  sSel.innerHTML='<option value="">-- Select Stream --</option><option>'+a.stream+'</option>';
+  if(a.stream) sSel.value=a.stream;
+  let subSel=document.getElementById('selSubject');
+  subSel.innerHTML='<option>'+(a.subject||'Biology')+'</option>';
+  subSel.disabled=true;
+  subSel.style.background='#f1f5f9';
+}
+function doLogin(){
+  let e=document.getElementById('loginEmail').value.trim();
+  let p=document.getElementById('loginPass').value;
+  let extra=localStorage.getItem('stb_user_pass')?JSON.parse(localStorage.getItem('stb_user_pass'))[e.toLowerCase()]:null;
+  if((e.toLowerCase()===TEACHER_EMAIL.toLowerCase()&&p===TEACHER_PASS)||(extra&&p===extra)){
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('app').style.display='block';
+    document.getElementById('teacherEmailShow').innerText=e;
+    document.getElementById('chgEmail').value=e;
+    let displayName=getNameFromEmail(e);
+    document.getElementById('welcomeName').innerText=displayName;
+    document.getElementById('teacherNameShow').innerText=displayName;
+    loadAssignment();applyAssignmentRestrictions();loadNotifications();refreshCounts();loadSentHistory();
+  }else{document.getElementById('loginErr').innerText='❌ Wrong email or password. Ask Admin to reset.'}
+}
+function logout(){document.getElementById('app').style.display='none';document.getElementById('loginScreen').style.display='flex'}
+function changePass(){let oldP=document.getElementById('chgOld').value;let nw=document.getElementById('chgNew').value;let cf=document.getElementById('chgConfirm').value;let msg=document.getElementById('chgMsg');if(oldP!==TEACHER_PASS){msg.style.color='red';msg.innerText='❌ Current password wrong.';return}if(nw.length<6){msg.style.color='red';msg.innerText='❌ Min 6 chars.';return}if(nw!==cf){msg.style.color='red';msg.innerText='❌ Do not match.';return}TEACHER_PASS=nw;localStorage.setItem('stb_teacher_pass',nw);msg.style.color='green';msg.innerText='✅ Password changed!';alert('✅ Password changed!')}
+document.getElementById('loginPass').addEventListener('keydown',e=>{if(e.key=='Enter')doLogin()});
+let historyStack=['dash'];function show(id,el){if(historyStack[historyStack.length-1]!==id)historyStack.push(id);['dash','results','settings','notifs'].forEach(x=>document.getElementById(x).style.display=x==id?'block':'none');document.querySelectorAll('.side div').forEach(d=>d.classList.remove('active'));if(el)el.classList.add('active');document.getElementById('backBtn').disabled=historyStack.length<=1;if(id=='dash')loadSentHistory();if(id=='results')applyAssignmentRestrictions();}
+function goBack(){if(historyStack.length<=1)return;historyStack.pop();let prev=historyStack[historyStack.length-1];['dash','results','settings','notifs'].forEach(x=>document.getElementById(x).style.display=x==prev?'block':'none');document.getElementById('backBtn').disabled=historyStack.length<=1}
+function loadAssignment(){let assign=localStorage.getItem('stb_teacher_assign');let myEmail=document.getElementById('loginEmail').value.trim().toLowerCase();let assigns=localStorage.getItem('stb_teacher_assigns');let found=null;if(assigns){try{let obj=JSON.parse(assigns);found=obj[myEmail]||obj['teacher@stbenedict.ac.ke']}catch(e){}}if(found){document.getElementById('myAssign').innerHTML=found}else if(assign){document.getElementById('myAssign').innerHTML=assign}else{document.getElementById('myAssign').innerHTML='Grade 10 - 10A<br>Biology - STEM<br><small>Default - Admin can change this in Teachers & Roles</small>'}}
+function loadNotifications(){let notifs=JSON.parse(localStorage.getItem('stb_notifications')||'[]');if(localStorage.getItem('stb_notifications')===null){notifs=[{title:'Term 2 Exams Start Monday',msg:'Dear teachers, Term 2 exams start on Monday. Ensure marks are ready.',to:'ALL',from:'Admin',date:'Today'},{title:'Staff Meeting Friday 4pm',msg:'All teachers to attend staff meeting in staffroom.',to:'All Teachers Only',from:'Admin',date:'Yesterday'}];localStorage.setItem('stb_notifications',JSON.stringify(notifs));}document.getElementById('notifCountSide').innerText=notifs.length;let html=notifs.length?notifs.map((n,i)=>`<div style="border:1px solid #eee;padding:12px;border-radius:10px;margin:8px 0;background:#fffbe6"><b>${n.title}</b><br>${n.msg}<br><small>From ${n.from} • ${n.date} • To: ${n.to}</small><br><button onclick="markRead(this)">Mark Read</button> <button onclick="deleteOneNotif(${i})" style="background:#d32f2f;color:white;border:0;padding:6px 10px;border-radius:8px">🗑️ Delete After Reading</button></div>`).join(''):'<p style="color:#666">No notifications.</p>';document.getElementById('dashNotifList').innerHTML=html;document.getElementById('notifList').innerHTML=html}
+function deleteOneNotif(i){if(!confirm('Delete this notification after reading?'))return;let notifs=JSON.parse(localStorage.getItem('stb_notifications')||'[]');notifs.splice(i,1);localStorage.setItem('stb_notifications',JSON.stringify(notifs));loadNotifications();}
+function markRead(b){b.closest('div').style.background='#fff';b.innerText='Read ✓'}
+function markAllRead(){document.querySelectorAll('#notifList div').forEach(n=>n.style.background='#fff');document.getElementById('notifCountSide').innerText='0'}
+function refreshCounts(){let recs=JSON.parse(localStorage.getItem('stb_student_records')||'[]');if(recs.length==0)recs=[{name:'John Mwangi'},{name:'Mary Wanjiru'},{name:'Peter Kamau'}];document.getElementById('totalStu').innerText=recs.length}
+function getStudentsForGrade(){
+  let g=document.getElementById('selGrade').value;
+  let st=document.getElementById('selStream').value;
+  let recs=JSON.parse(localStorage.getItem('stb_student_records')||'[]');
+  if(recs.length==0){
+    recs=[
+      {name:'John Mwangi',adm:'ADM/2024/0087',grade:'Grade 10',stream:'10A',pathway:'STEM'},
+      {name:'Mary Wanjiru',adm:'ADM/2024/0088',grade:'Grade 10',stream:'10A',pathway:'Social Sciences'},
+      {name:'Peter Kamau',adm:'ADM/2024/0089',grade:'Grade 10',stream:'10B',pathway:'Arts & Sports Science'},
+      {name:'Grace Achieng',adm:'ADM/2024/0090',grade:'Grade 11',stream:'11A',pathway:'STEM'},
+      {name:'James Otieno',adm:'ADM/2024/0091',grade:'Grade 11',stream:'11B',pathway:'STEM'}
+    ];
+  }
+  let exact = recs.filter(r => (!g||r.grade==g) && (!st||!r.stream||r.stream==st||r.stream==st.toUpperCase()));
+  if(exact.length>0) return exact;
+  let gradeOnly = recs.filter(r => !g||r.grade==g);
+  if(gradeOnly.length>0){
+    document.getElementById('gradeInfo').innerHTML = gradeOnly.length+' students found in <b>'+g+'</b> (Stream '+st+' has 0, so showing all '+g+' students - Check Admin: student Stream must be '+st+')';
+    return gradeOnly;
+  }
+  return [];
+}
+function loadStudents(){
+  let g=document.getElementById('selGrade').value;
+  let st=document.getElementById('selStream').value;
+  if(!g){alert('Select Grade first');return}
+  if(!st){alert('Select Stream first - Only your assigned stream shows');return}
+  document.getElementById('gradeInfo').innerHTML='';
+  let students=getStudentsForGrade();
+  if(!document.getElementById('gradeInfo').innerHTML.includes('showing all')){
+    document.getElementById('gradeInfo').innerText=students.length+' students found in '+g+' - Stream '+st+' from Admin Dashboard.';
+  }
+  if(students.length==0){
+    document.getElementById('gradeInfo').innerHTML='❌ <b>0 students found in '+g+' - Stream '+st+'</b><br>Go to Admin → Student Records → Check: 1) Student Grade = '+g+' ? 2) Student Stream = '+st+' ? If Admin admitted them as 11A, change to 11B or re-admit.';
+    document.getElementById('markTbl').innerHTML='<tr><th>Student</th><th>ADM No</th><th>Pathway</th><th>Stream</th><th>Exam /100</th><th>Final</th><th>Grade (CBC)</th></tr>';
+    return;
+  }
+  let extra=document.getElementById('extraType').value;
+  document.getElementById('extraTh').style.display=extra?'':'none';
+  let tbl=document.getElementById('markTbl');
+  tbl.innerHTML='<tr><th>Student</th><th>ADM No</th><th>Pathway</th><th>Stream</th><th>Exam /100</th><th style="display:'+(extra?'':'none')+'">'+(extra||'Additional')+'</th><th>Final /100</th><th>Grade (CBC)</th><th>+ Add Mark</th></tr>';
+  students.forEach((s,i)=>{
+    let r=tbl.insertRow(-1);
+    let pill=s.pathway=='STEM'?'<span class="pill">STEM</span>':(s.pathway||'').includes('Social')?'<span class="pill blue">Social</span>':'<span class="pill amber">Arts</span>';
+    r.innerHTML=`<td><b>${s.name}</b><br><small>${s.stream||st}</small></td><td>${s.adm}</td><td>${pill}</td><td>${s.stream||st}</td><td><input class="small exam" type="number" placeholder="Exam" oninput="calcRow(this)"></td><td style="display:${extra?'':'none'}"><input class="small extra" type="number" placeholder="${extra||'Extra'}" oninput="calcRow(this)"></td><td><b class="final">-</b></td><td><b class="grade">-</b></td><td><button onclick="addExtraMark(this)">+ Add Mark</button></td>`;
+  });
+  document.getElementById('markEmpty').style.display='none';
+  updateFormula();updatePreview();
+}
+function addExtraMark(btn){let row=btn.closest('tr');let extra=prompt('Add another mark - Type: CAT 1 / CAT 2 / Assignment / Practical / Quiz');if(!extra)return;let mark=prompt('Mark for '+extra+' /100:');if(mark==null)return;let note=document.createElement('div');note.innerText='Extra: '+extra+' = '+mark;note.style.fontSize='11px';row.cells[0].appendChild(note);calcRow(btn)}
+function updateFormula(){let e=parseFloat(document.getElementById('examWeight').value)||100;let xw=parseFloat(document.getElementById('extraWeight').value)||0;let extra=document.getElementById('extraType').value;let txt='Final = Exam '+e+'%';if(extra&&xw>0)txt+=' + '+extra+' '+xw+'%';document.getElementById('formulaPreview').innerText=txt;document.querySelectorAll('#markTbl tr').forEach((r,i)=>{if(i==0)return;calcRow(r.querySelector('.exam'))});updatePreview()}
+function updateFormulaAndReload(){updateFormula();if(document.getElementById('selGrade').value&&document.getElementById('selStream').value){loadStudents();}else{updatePreview();}}
+function gradeFromMark(m){if(m>=80)return'EE';if(m>=60)return'ME';if(m>=40)return'AE';return'BE'}
+function gradeFull(m){if(m>=80)return'EE - Exceeding Expectation';if(m>=60)return'ME - Meeting Expectation';if(m>=40)return'AE - Approaching Expectation';return'BE - Below Expectation'}
+function calcRow(el){if(!el)return;let row=el.closest('tr');let exam=parseFloat(row.querySelector('.exam')?.value)||0;let extra=parseFloat(row.querySelector('.extra')?.value)||0;let ew=parseFloat(document.getElementById('examWeight').value)||100;let xw=parseFloat(document.getElementById('extraWeight').value)||0;let extraType=document.getElementById('extraType').value;let total=ew+(extraType?xw:0);if(total==0)total=100;let final=(exam*ew + (extraType?extra*xw:0))/total;final=Math.round(final*10)/10;row.querySelector('.final').innerText=final;row.querySelector('.grade').innerText=gradeFull(final);updatePreview()}
+function updatePreview(){let g=document.getElementById('selGrade').value||'-';let st=document.getElementById('selStream').value||'-';let s=document.getElementById('selSubject').value;let t=document.getElementById('selTerm').value;let et=document.getElementById('selExamType').value;let e=document.getElementById('examWeight').value;let rows=[...document.querySelectorAll('#markTbl tr')].slice(1);document.getElementById('previewTitle').innerText='Grade: '+g+' Stream: '+st+' | Subject: '+s+' | Term: '+t+' | Exam: '+et;let extra=document.getElementById('extraType').value;let xw=document.getElementById('extraWeight').value;document.getElementById('previewFormula').innerText='Formula: Exam '+e+'%'+(extra?' + '+extra+' '+xw+'%':'')+' | CBC: EE=80+, ME=60-79, AE=40-59, BE=Below 40';document.getElementById('previewCount').innerText=rows.length+' students • CBC Grade shows automatically';let html=rows.length?'<table><tr><th>Student</th><th>Exam</th><th>'+(extra||'Additional')+'</th><th>Final</th><th>CBC Grade</th><th>Term</th><th>Exam Type</th></tr>'+rows.map(r=>`<tr><td>${r.cells[0].innerText}</td><td>${r.querySelector('.exam')?.value||'-'}</td><td>${r.querySelector('.extra')?.value||'-'}</td><td><b>${r.querySelector('.final').innerText}</b></td><td><b>${r.querySelector('.grade').innerText}</b></td><td>${t}</td><td>${et}</td></tr>`).join('')+'</table>':'<p style="color:#666">Load students first.</p>';document.getElementById('previewTable').innerHTML=html}
+function submitToAdmin(){let g=document.getElementById('selGrade').value;let st=document.getElementById('selStream').value;if(!g){alert('Select Grade first');return}if(!st){alert('Select Stream first');return}let rows=[...document.querySelectorAll('#markTbl tr')].slice(1);if(rows.length==0){alert('Load students first');return}let hasMark=rows.some(r=>r.querySelector('.exam')?.value||r.querySelector('.extra')?.value);if(!hasMark){alert('Enter at least one mark');return}let s=document.getElementById('selSubject').value;let t=document.getElementById('selTerm').value;let et=document.getElementById('selExamType').value;let e=document.getElementById('examWeight').value;let extra=document.getElementById('extraType').value;let xw=document.getElementById('extraWeight').value;let formula='Exam '+e+'%'+(extra?' + '+extra+' '+xw+'%':'');let list=rows.map(r=>({name:r.cells[0].innerText,adm:r.cells[1].innerText,cat:r.querySelector('.extra')?.value||'',exam:r.querySelector('.exam')?.value||'',extra:r.querySelector('.extra')?.value||'',extraType:extra,final:r.querySelector('.final').innerText,grade:r.querySelector('.grade').innerText}));let payload={grade:g,stream:st,subject:s,term:t,examType:et,formula:formula,students:list,date:new Date().toLocaleString(),status:'Waiting Approval'};let existing=JSON.parse(localStorage.getItem('stb_results_pending')||'[]');existing.push(payload);localStorage.setItem('stb_results_pending',JSON.stringify(existing));loadSentHistory();document.getElementById('submitMsg').innerText='✅ List submitted to Admin for Approval!';alert('✅ Submitted to Admin for Approval!\n'+g+' '+st+' | '+s+' | '+t+' | '+et)}
+['selGrade','selSubject','selTerm','selExamType','examWeight','extraWeight'].forEach(id=>{document.getElementById(id).addEventListener('change',updatePreview)});document.getElementById('extraType').addEventListener('change',updateFormulaAndReload);
+refreshCounts();
+function loadSentHistory(){
+  let pending = JSON.parse(localStorage.getItem('stb_results_pending')||'[]');
+  let approved = JSON.parse(localStorage.getItem('stb_results_approved')||'[]');
+  let rejected = JSON.parse(localStorage.getItem('stb_results_rejected')||'[]');
+  let h = document.getElementById('sentHistory');
+  if(!h) return;
+  if(pending.length==0 && approved.length==0 && rejected.length==0){ h.innerHTML='<p style="color:#666">No lists sent yet.</p>'; return; }
+  let html='';
+  approved.forEach((p,i)=>{ html+=`<div style="border:1px solid #bbf7d0;background:#f0fdf4;padding:12px;border-radius:10px;margin:8px 0">✅ <b>${p.grade} ${p.stream||''} - ${p.subject} - ${p.term} - ${p.examType}</b><br>Formula: ${p.formula}<br>${p.students.length} students<br><small>Status: <b style="color:green">Approved by Admin ✅ - You have seen this</b></small><br><button onclick="deleteSentItem('approved',${i})" style="background:#d32f2f;color:white;border:0;padding:7px 12px;border-radius:8px;margin-top:6px">🗑️ Delete This Approval</button></div>`; });
+  rejected.forEach((p,i)=>{ html+=`<div style="border:1px solid #fecaca;background:#fef2f2;padding:12px;border-radius:10px;margin:8px 0">❌ <b>${p.grade} ${p.stream||''} - ${p.subject} - ${p.term} - ${p.examType}</b><br>Formula: ${p.formula}<br>${p.students.length} students<br><small>Status: <b style="color:red">Rejected by Admin ❌ - Please correct and resend</b></small><br><button onclick="deleteSentItem('rejected',${i})" style="background:#d32f2f;color:white;border:0;padding:7px 12px;border-radius:8px;margin-top:6px">🗑️ Delete This Rejection</button></div>`; });
+  pending.forEach((p,i)=>{ html+=`<div style="border:1px solid #fde68a;background:#fffbe6;padding:12px;border-radius:10px;margin:8px 0">⏳ <b>${p.grade} ${p.stream||''} - ${p.subject} - ${p.term} - ${p.examType}</b><br>Formula: ${p.formula}<br>${p.students.length} students<br><small>Submitted: ${p.date} • Status: <b>Waiting Admin Approval</b></small></div>`; });
+  h.innerHTML=html;
+  document.getElementById('sentResults').innerText=pending.length+approved.length+rejected.length;
+  document.getElementById('pendingCount').innerText=pending.length;
+  document.getElementById('approvedCount').innerText=approved.length;
+}
+function deleteSentItem(type,i){
+  let key=type=='approved'?'stb_results_approved':'stb_results_rejected';
+  if(!confirm('Delete this '+type+' record after viewing? It will be removed from your list.')) return;
+  let list=JSON.parse(localStorage.getItem(key)||'[]'); list.splice(i,1); localStorage.setItem(key,JSON.stringify(list)); loadSentHistory();
+}
+function clearApprovedRejected(){
+  if(!confirm('Clear ALL Approved + Rejected from your list? Waiting lists will stay.')) return;
+  localStorage.setItem('stb_results_approved',JSON.stringify([]));
+  localStorage.setItem('stb_results_rejected',JSON.stringify([]));
+  loadSentHistory();
+}
+setInterval(loadSentHistory, 3000);
+setInterval(loadNotifications, 3000);
+</script></body></html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>St Benedict - Karau | Finance</title>
+<style>
+*{box-sizing:border-box;font-family:Inter,Arial}body{margin:0;background:#f3f4f6}
+header{background:#7c3aed;color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+header h1{font-size:17px;margin:0}header p{color:#ddd6fe;margin:2px 0 0;font-size:12px}
+.btn{background:#7c3aed;color:#fff;border:0;padding:10px 16px;border-radius:10px;cursor:pointer;font-weight:700}
+.btn-green{background:#15803d;color:#fff;border:0;padding:10px 16px;border-radius:10px;cursor:pointer;font-weight:700}
+.btn-outline{background:#fff;border:1px solid #7c3aed;color:#7c3aed;padding:9px 14px;border-radius:10px;cursor:pointer;font-weight:600}
+.backBtn{background:#fff;color:#7c3aed;border:0;padding:9px 14px;border-radius:10px;cursor:pointer;font-weight:700}.backBtn:disabled{opacity:.4}
+.wrap{display:flex}.side{width:260px;background:#fff;margin:14px;padding:14px;border-radius:14px;height:fit-content}.side div{padding:11px;border-radius:10px;cursor:pointer}.side .active{background:#ede9fe;font-weight:700;border-left:4px solid #7c3aed}
+.main{flex:1;margin:14px 14px 14px 0}.card{background:#fff;border-radius:16px;padding:18px;box-shadow:0 2px 10px #0001;margin-bottom:16px}
+table{width:100%;border-collapse:collapse}th{background:#f8fafc;text-align:left;padding:10px 8px;font-size:12px;color:#334155}td{padding:10px 8px;border-bottom:1px solid #f1f5f9;font-size:13px;vertical-align:top}
+.pill{background:#dcfce7;color:#166534;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block}.pill.red{background:#fee2e2;color:#991b1b}.pill.amber{background:#fef3c7;color:#92400e}.pill.blue{background:#dbeafe;color:#1e40af}.pill.purple{background:#ede9fe;color:#7c3aed}
+.avatar{width:34px;height:34px;border-radius:50%;background:#ede9fe;color:#7c3aed;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;margin-right:8px}
+input,select,textarea{width:100%;padding:10px;margin:6px 0 10px;border:1px solid #ddd;border-radius:10px;outline:none}input.small{padding:7px;width:90px}
+.stat{display:flex;gap:12px;flex-wrap:wrap}.stat>div{flex:1;min-width:130px;background:#fff;border-radius:14px;padding:14px;box-shadow:0 2px 8px #0001}.stat b{font-size:20px}.stat small{color:#666}
+.chip{border:1px solid #e2e8f0;background:#fff;padding:6px 10px;border-radius:20px;cursor:pointer;font-size:13px}
+.empty{text-align:center;color:#94a3b8;padding:16px}
+#loginScreen{position:fixed;inset:0;background:#7c3aed;display:flex;align-items:center;justify-content:center;z-index:100;padding:16px}
+.loginBox{background:#fff;width:100%;max-width:420px;border-radius:18px;padding:28px;box-shadow:0 10px 30px #0004;text-align:center}
+.loginBox h1{color:#7c3aed;margin:4px 0}.loginBox p{color:#666;font-size:13px}
+#app{display:none}
+.step{background:#f5f3ff;border:2px solid #ddd6fe;padding:14px;border-radius:12px;margin:10px 0}
+/* ===== PRINT FIX - ONLY WHAT YOU CLICKED PRINTS ===== */
+@media print{
+  body *{visibility:hidden}
+  header,.side,.noPrint,.btn,.btn-green,.btn-outline,.backBtn{display:none !important}
+  #loginScreen{display:none !important}
+  #dash,#fees,#structure,#expenses,#notifs,#settings{display:none !important}
+  /* PRINT REPORT ONLY */
+  body.print-report #reports{display:block !important}
+  body.print-report #reports *{visibility:visible}
+  body.print-report #reports{position:absolute;left:0;top:0;width:100%;margin:0;padding:20px}
+  /* PRINT RECEIPT ONLY */
+  body.print-receipt #payment{display:block !important}
+  body.print-receipt #payment *{visibility:visible}
+  body.print-receipt #payment{position:absolute;left:0;top:0;width:100%;margin:0;padding:20px}
+  body.print-receipt #payment .card:first-child{display:none !important}
+  body.print-receipt #payment .card:nth-child(3){display:none !important}
+  body.print-receipt #receiptCard{display:block !important}
+  body.print-receipt #receiptCard *{visibility:visible}
+  /* PRINT FEES LIST ONLY */
+  body.print-fees #fees{display:block !important}
+  body.print-fees #fees *{visibility:visible}
+  body.print-fees #fees{position:absolute;left:0;top:0;width:100%;margin:0;padding:20px}
+}
+.receipt-print{border:2px solid #000;padding:20px;border-radius:10px;max-width:480px;margin:0 auto;font-size:14px;line-height:1.8}
+</style></head>
+<body>
+<div id="loginScreen"><div class="loginBox"><div style="font-size:44px">💰</div><h1>ST BENEDICT - KARAU</h1><p>Finance Login</p><label style="text-align:left;display:block"><b>Email</b></label><input id="loginEmail" value="finance@stbenedict.ac.ke"><label style="text-align:left;display:block"><b>Password</b></label><input id="loginPass" type="password" value="finance123"><button class="btn" style="width:100%;padding:13px;font-size:16px" onclick="doLogin()">Login →</button><p id="loginErr" style="color:red;font-weight:700"></p><p style="font-size:12px;background:#f8fafc;padding:10px;border-radius:10px">Test: finance@stbenedict.ac.ke / finance123<br>Real password is the one Admin created for you.</p></div></div>
+
+<div id="app">
+<header><div style="display:flex;align-items:center;gap:10px"><button class="backBtn" id="backBtn" onclick="goBack()" disabled>← Back</button><div><h1>ST BENEDICT SECONDARY SCHOOL - KARAU</h1><p>Finance Dashboard • <span id="financeNameShow">Finance</span> • <span id="financeEmailShow"></span></p></div></div><div style="display:flex;gap:8px"><button class="btn-outline" style="background:#fff" onclick="show('settings')">⚙️ Change My Password</button><button class="btn-outline" style="background:#fff" onclick="logout()">Logout</button></div></header>
+<button class="btn-outline" style="background:#fff" onclick="location.href='index.html'">🏠 Home</button>
+
+<div class="wrap"><div class="side">
+<div style="font-size:11px;color:#999;font-weight:700">MAIN</div>
+<div class="active" onclick="show('dash',this)">🏠 Dashboard</div>
+<div onclick="show('fees',this)">👨‍🎓 Students Fees</div>
+<div onclick="show('payment',this)">💵 Record Payment</div>
+<div onclick="show('structure',this)">🧾 Fee Structure</div>
+<div onclick="show('expenses',this)">📉 Expenses</div>
+<div onclick="show('reports',this)">📊 Reports</div>
+<div style="font-size:11px;color:#999;font-weight:700;margin-top:10px">COMMUNICATION</div>
+<div onclick="show('notifs',this)">🔔 Notifications from Admin <b id="notifCountSide" style="background:#ef4444;color:#fff;padding:2px 8px;border-radius:20px">0</b></div>
+<div style="font-size:11px;color:#999;font-weight:700;margin-top:10px">ACCOUNT</div>
+<div onclick="show('settings',this)">⚙️ Change My Password</div>
+<div style="background:#f5f3ff;padding:10px;border-radius:10px;margin-top:10px"><b>Academic Year: <span id="yearTxt">2024/2025</span></b><br>Term <span id="termTxt">2</span><br><small>Fee per Term: <b id="sideFee">Ksh 15,000</b></small></div>
+</div>
+
+<div class="main">
+<div id="dash">
+<h2 style="margin:0">Welcome back, <span id="welcomeName">Finance</span> 👋</h2>
+<p style="font-size:13px;color:#666">Here is your work today.</p>
+<div class="stat"><div>💰<br><b id="totalExpected">Ksh 0</b><br><small>Total Fees Expected</small></div><div>✅<br><b id="totalCollected">Ksh 0</b><br><small>Total Collected</small></div><div>⚠️<br><b id="totalBalance">Ksh 0</b><br><small>Total Balance</small></div><div>📉<br><b id="totalExpenses">Ksh 0</b><br><small>Total Expenses</small></div><div>👨‍🎓<br><b id="totalStu">0</b><br><small>Students</small></div></div>
+<div class="card noPrint" style="display:flex;gap:8px;flex-wrap:wrap"><b style="width:100%">⚡ Quick Actions:</b><button class="chip" onclick="show('payment')">💵 Record Payment →</button><button class="chip" onclick="show('fees')">👨‍🎓 View Students Fees</button><button class="chip" onclick="show('expenses')">📉 Add Expense</button><button class="chip" onclick="show('notifs')">🔔 Notifications from Admin</button></div>
+<div class="card"><h3 style="margin:0">🔔 Notifications from Admin</h3><p style="font-size:12px;color:#666">This is where Admin's notifications will appear.</p><div id="dashNotifList"></div><button class="btn-outline noPrint" onclick="show('notifs')">View All Notifications →</button></div>
+<div class="card"><h3 style="margin:0">Recent Payments</h3><div id="recentPayments"><p style="color:#666">No payments recorded yet.</p></div></div>
+<div class="card"><h3 style="margin:0">Students With Balance - Need to Pay</h3><div id="balanceList"><p style="color:#666">All students cleared or no students yet.</p></div></div></div>
+
+<div id="notifs" style="display:none"><div class="card"><h2>🔔 Notifications from Admin</h2><p style="font-size:13px;color:#666">All messages Admin sent to Finance / ALL appear here.</p><button class="btn-outline noPrint" onclick="markAllRead()">Mark All As Read</button><div id="notifList"></div></div><button class="btn-outline noPrint" onclick="goBack()">← Back</button></div>
+
+<div id="fees" style="display:none"><div class="card"><h2>👨‍🎓 Students Fees - From Admin Dashboard</h2><p class="noPrint" style="font-size:13px;color:#666">List comes from Admin. Fee per student = Fee Structure for their Grade.</p><div class="noPrint" style="display:flex;gap:8px;flex-wrap:wrap"><input id="feeSearch" placeholder="🔍 Search student..." oninput="renderFees()" style="flex:1"><select id="feeGradeF" onchange="renderFees()"><option value="">All Grades</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select><select id="feeStatusF" onchange="renderFees()"><option value="">All Status</option><option>Paid</option><option>Partial</option><option>Not Paid</option></select></div><div style="overflow:auto"><table id="feeTbl"><tr><th>Student</th><th>ADM No</th><th>Grade</th><th>Fee Expected</th><th>Paid</th><th>Balance</th><th>Status</th><th class="noPrint">Action</th></tr></table></div><div class="empty" id="feeEmpty">No students yet. Admin needs to admit students first.</div><br><div class="noPrint"><button class="btn-outline" onclick="printFees()">🖨 Print Fees List - Only This List</button> <button class="btn-outline" onclick="downloadFees()">⬇ Download Fees CSV</button></div></div><button class="btn-outline noPrint" onclick="goBack()">← Back</button></div>
+
+<div id="payment" style="display:none"><div class="card noPrint"><h2>💵 Record Payment</h2>
+<div class="step"><b>STEP 1: Which Grade?</b><select id="payGrade" onchange="loadPayStudents()"><option value="">-- Select Grade --</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div>
+<div class="step"><b>STEP 2: Which Student?</b><select id="payStudent"><option value="">-- Select Student --</option></select><p id="payStudentInfo" style="font-size:12px;color:#666"></p></div>
+<div class="step"><b>STEP 3: Payment Details</b><label><b>Term</b></label><select id="payTerm"><option>Term 1</option><option selected>Term 2</option><option>Term 3</option></select><label><b>Amount Paid (Ksh)</b></label><input id="payAmount" type="number" placeholder="e.g. 15000"><label><b>Payment Method</b></label><select id="payMethod"><option>Cash</option><option>Mpesa</option><option>Bank</option><option>Cheque</option></select><label><b>Mpesa Code / Receipt No (Optional)</b></label><input id="payRef" placeholder="e.g. QK123ABC or Receipt 001"><label><b>Note</b></label><input id="payNote" placeholder="e.g. Part payment"></div>
+<button class="btn-green" style="width:100%;padding:14px;font-size:16px" onclick="recordPayment()">💵 Save Payment + Show Receipt →</button><p id="payMsg" style="font-weight:700"></p></div>
+<div class="card" id="receiptCard" style="display:none"><h3 class="noPrint">🧾 Receipt - Ready to Print</h3><div id="receiptBox" class="receipt-print"></div><br><div class="noPrint"><button class="btn-green" onclick="printReceipt()">🖨 Print Receipt - Only Receipt</button> <button class="btn-outline" onclick="document.getElementById('receiptCard').style.display='none'">Close Receipt</button></div></div>
+<div class="card noPrint"><h3>Payment History</h3><div id="payHistory"><p style="color:#666">No payments yet.</p></div></div><button class="btn-outline noPrint" onclick="goBack()">← Back</button></div>
+
+<div id="structure" style="display:none"><div class="card"><h2>🧾 Fee Structure - Per Grade / Term</h2><p style="font-size:13px;color:#666">Finance sets fees. This is used to calculate Expected fee for each student.</p><label><b>Grade 10 - Per Term (Ksh)</b></label><input id="fee10" type="number" value="15000"><label><b>Grade 11 - Per Term (Ksh)</b></label><input id="fee11" type="number" value="16000"><label><b>Grade 12 - Per Term (Ksh)</b></label><input id="fee12" type="number" value="17000"><label><b>Other Charges (e.g. Lunch / Transport) - Optional</b></label><input id="feeOther" type="number" value="0"><button class="btn noPrint" style="width:100%;padding:13px" onclick="saveStructure()">💾 Save Fee Structure</button><p id="structureMsg" style="font-weight:700"></p><div style="background:#f5f3ff;padding:12px;border-radius:10px;margin-top:10px"><b>Current:</b> <span id="structurePreview">Grade 10: 15,000 | Grade 11: 16,000 | Grade 12: 17,000</span></div></div><button class="btn-outline noPrint" onclick="goBack()">← Back</button></div>
+
+<div id="expenses" style="display:none"><div class="card"><h2>📉 Expenses</h2><label><b>Expense Title</b></label><input id="expTitle" placeholder="e.g. Chalk, Food, Transport"><label><b>Amount (Ksh)</b></label><input id="expAmount" type="number" placeholder="e.g. 5000"><label><b>Category</b></label><select id="expCat"><option>Teaching Materials</option><option>Food</option><option>Transport</option><option>Maintenance</option><option>Salaries</option><option>Other</option></select><label><b>Date</b></label><input id="expDate" type="date"><button class="btn noPrint" style="width:100%;padding:13px" onclick="addExpense()">+ Add Expense</button><p id="expMsg" style="font-weight:700"></p></div><div class="card"><h3>Expenses List</h3><div id="expList"><p style="color:#666">No expenses yet.</p></div></div><button class="btn-outline noPrint" onclick="goBack()">← Back</button></div>
+
+<div id="reports" style="display:none"><div class="card"><h2>📊 Reports</h2><p style="font-size:12px;color:#666">ST BENEDICT - KARAU • Printed: <span class="printDate"></span></p><div style="background:#f5f3ff;padding:14px;border-radius:12px"><b id="reportSummary">Total Expected: Ksh 0 | Collected: Ksh 0 | Balance: Ksh 0 | Expenses: Ksh 0 | Net: Ksh 0</b></div><br><div class="noPrint"><button class="btn-outline" onclick="downloadFees()">⬇ Download Fees Report CSV</button> <button class="btn-outline" onclick="printReport()">🖨 Print Report - Only This Report</button></div><br><br><table><tr><th>Grade</th><th>Students</th><th>Expected</th><th>Collected</th><th>Balance</th></tr><tbody id="reportTbl"></tbody></table></div><button class="btn-outline noPrint" onclick="goBack()">← Back</button></div>
+
+<div id="settings" style="display:none"><div class="card"><h2>⚙️ Change My Password</h2><label><b>Enter Your Email</b></label><input id="chgEmail" value="finance@stbenedict.ac.ke"><label><b>Current Password</b></label><input id="chgOld" type="password"><label><b>New Password</b></label><input id="chgNew" type="password"><label><b>Confirm New Password</b></label><input id="chgConfirm" type="password"><button class="btn noPrint" style="width:100%;padding:13px" onclick="changePass()">🔒 Change Password</button><p id="chgMsg" style="font-weight:700"></p></div><button class="btn-outline noPrint" onclick="goBack()">← Back</button></div>
+</div></div></div>
+
+<script>
+let FINANCE_EMAIL=localStorage.getItem('stb_finance_email')||'finance@stbenedict.ac.ke';let FINANCE_PASS=localStorage.getItem('stb_finance_pass')||'finance123';
+function getNameFromEmail(email){let names=JSON.parse(localStorage.getItem('stb_user_names')||'{}');if(names[email.toLowerCase()])return names[email.toLowerCase()];let user=email.split('@')[0];user=user.replace(/[._-]/g,' ');return user.split(' ').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ')}
+function doLogin(){let e=document.getElementById('loginEmail').value.trim();let p=document.getElementById('loginPass').value;let extra=localStorage.getItem('stb_user_pass')?JSON.parse(localStorage.getItem('stb_user_pass'))[e.toLowerCase()]:null;if((e.toLowerCase()===FINANCE_EMAIL.toLowerCase()&&p===FINANCE_PASS)||(extra&&p===extra)){document.getElementById('loginScreen').style.display='none';document.getElementById('app').style.display='block';document.getElementById('financeEmailShow').innerText=e;document.getElementById('chgEmail').value=e;let n=getNameFromEmail(e);document.getElementById('welcomeName').innerText=n;document.getElementById('financeNameShow').innerText=n;loadStructure();loadNotifications();renderFees();renderPayments();renderExpenses();updateDashboard()}else{document.getElementById('loginErr').innerText='❌ Wrong email or password. Ask Admin to reset.'}}
+function logout(){document.getElementById('app').style.display='none';document.getElementById('loginScreen').style.display='flex'}
+function changePass(){let oldP=document.getElementById('chgOld').value;let nw=document.getElementById('chgNew').value;let cf=document.getElementById('chgConfirm').value;let msg=document.getElementById('chgMsg');if(oldP!==FINANCE_PASS){msg.style.color='red';msg.innerText='❌ Current password wrong.';return}if(nw.length<6){msg.style.color='red';msg.innerText='❌ Min 6 chars.';return}if(nw!==cf){msg.style.color='red';msg.innerText='❌ Do not match.';return}FINANCE_PASS=nw;localStorage.setItem('stb_finance_pass',nw);msg.style.color='green';msg.innerText='✅ Password changed!';alert('✅ Password changed!')}
+document.getElementById('loginPass').addEventListener('keydown',e=>{if(e.key=='Enter')doLogin()});
+let historyStack=['dash'];function show(id,el){if(historyStack[historyStack.length-1]!==id)historyStack.push(id);['dash','fees','payment','structure','expenses','reports','notifs','settings'].forEach(x=>document.getElementById(x).style.display=x==id?'block':'none');document.querySelectorAll('.side div').forEach(d=>d.classList.remove('active'));if(el)el.classList.add('active');document.getElementById('backBtn').disabled=historyStack.length<=1;if(id=='fees')renderFees();if(id=='reports')updateDashboard()}
+function goBack(){if(historyStack.length<=1)return;historyStack.pop();let prev=historyStack[historyStack.length-1];['dash','fees','payment','structure','expenses','reports','notifs','settings'].forEach(x=>document.getElementById(x).style.display=x==prev?'block':'none');document.getElementById('backBtn').disabled=historyStack.length<=1}
+// ===== PRINT FUNCTIONS - CLEAN PRINT =====
+function printReport(){document.querySelectorAll('.printDate').forEach(e=>e.innerText=new Date().toLocaleString());document.body.classList.remove('print-receipt','print-fees');document.body.classList.add('print-report');setTimeout(()=>{window.print();setTimeout(()=>document.body.classList.remove('print-report'),500)},100)}
+// ===== NEW PRINT - OPENS ONLY WHAT YOU WANT =====
+function printReceipt(){
+  let content = document.getElementById('receiptBox').innerHTML;
+  if(!content || content.trim()==""){
+    alert('No receipt yet. Record a payment first.');
+    return;
+  }
+  let w = window.open('','','width=600,height=700');
+  w.document.write(`
+    <html><head><title>Receipt</title>
+    <style>
+      body{font-family:Arial;padding:20px}
+      .receipt-print{border:2px solid #000;padding:20px;border-radius:10px;max-width:480px;margin:0 auto;font-size:15px;line-height:1.9}
+      button{display:none}
+    </style></head>
+    <body><div class="receipt-print">${content}</div>
+    <script>window.onload=function(){window.print();}<\/script>
+    </body></html>
+  `);
+  w.document.close();
+}
+
+function printReport(){
+  let content = document.getElementById('reports').innerHTML;
+  let w = window.open('','','width=800,height=700');
+  w.document.write(`
+    <html><head><title>Finance Report</title>
+    <style>body{font-family:Arial;padding:20px} table{width:100%;border-collapse:collapse} th,td{border:1px solid #ddd;padding:10px;text-align:left} button{display:none} .noPrint{display:none}</style></head>
+    <body><h2>ST BENEDICT - KARAU - Finance Report</h2>${content}
+    <script>window.onload=function(){window.print();}<\/script>
+    </body></html>
+  `);
+  w.document.close();
+}
+
+function printFees(){
+  let content = document.getElementById('fees').innerHTML;
+  let w = window.open('','','width=800,height=700');
+  w.document.write(`
+    <html><head><title>Fees List</title>
+    <style>body{font-family:Arial;padding:20px} table{width:100%;border-collapse:collapse} th,td{border:1px solid #ddd;padding:10px;text-align:left} button{display:none} .noPrint{display:none}</style></head>
+    <body><h2>ST BENEDICT - KARAU - Students Fees</h2>${content}
+    <script>window.onload=function(){window.print();}<\/script>
+    </body></html>
+  `);
+  w.document.close();
+}
+function printFees(){document.body.classList.remove('print-report','print-receipt');document.body.classList.add('print-fees');setTimeout(()=>{window.print();setTimeout(()=>document.body.classList.remove('print-fees'),500)},100)}
+function loadNotifications(){let notifs=JSON.parse(localStorage.getItem('stb_notifications')||'[]');if(notifs.length==0){notifs=[{title:'Fees Deadline Friday',msg:'Remind parents fees deadline is Friday.',to:'ALL',from:'Admin',date:'Today'}]}document.getElementById('notifCountSide').innerText=notifs.length;let html=notifs.map(n=>`<div style="border:1px solid #eee;padding:12px;border-radius:10px;margin:8px 0;background:#fffbe6"><b>${n.title}</b><br>${n.msg}<br><small>From ${n.from} • ${n.date} • To: ${n.to}</small> <button onclick="markRead(this)">Mark Read</button></div>`).join('');document.getElementById('dashNotifList').innerHTML=html;document.getElementById('notifList').innerHTML=html}
+function markRead(b){b.closest('div').style.background='#fff';b.innerText='Read ✓'}
+function markAllRead(){document.querySelectorAll('#notifList div').forEach(n=>n.style.background='#fff');document.getElementById('notifCountSide').innerText='0'}
+function getFeeForGrade(g){let s=JSON.parse(localStorage.getItem('stb_fee_structure')||'{"Grade 10":15000,"Grade 11":16000,"Grade 12":17000}');return s[g]||15000}
+function loadStructure(){let s=JSON.parse(localStorage.getItem('stb_fee_structure')||'{"Grade 10":15000,"Grade 11":16000,"Grade 12":17000}');document.getElementById('fee10').value=s['Grade 10'];document.getElementById('fee11').value=s['Grade 11'];document.getElementById('fee12').value=s['Grade 12'];document.getElementById('structurePreview').innerText=`Grade 10: ${s['Grade 10'].toLocaleString()} | Grade 11: ${s['Grade 11'].toLocaleString()} | Grade 12: ${s['Grade 12'].toLocaleString()}`;document.getElementById('sideFee').innerText='Ksh '+s['Grade 10'].toLocaleString()}
+function saveStructure(){let s={'Grade 10':parseInt(document.getElementById('fee10').value)||15000,'Grade 11':parseInt(document.getElementById('fee11').value)||16000,'Grade 12':parseInt(document.getElementById('fee12').value)||17000};localStorage.setItem('stb_fee_structure',JSON.stringify(s));loadStructure();renderFees();updateDashboard();document.getElementById('structureMsg').innerText='✅ Fee Structure Saved!';alert('✅ Fee Structure Saved!')}
+function getStudents(){let recs=JSON.parse(localStorage.getItem('stb_student_records')||'[]');if(recs.length==0){recs=[{name:'John Mwangi',adm:'ADM/2024/0087',grade:'Grade 10',pathway:'STEM'},{name:'Mary Wanjiru',adm:'ADM/2024/0088',grade:'Grade 10',pathway:'Social Sciences'},{name:'Peter Kamau',adm:'ADM/2024/0089',grade:'Grade 10',pathway:'Arts & Sports Science'}]}return recs}
+function getPayments(){return JSON.parse(localStorage.getItem('stb_payments')||'[]')}
+function getPaidFor(adm){return getPayments().filter(p=>p.adm===adm).reduce((a,p)=>a+parseInt(p.amount||0),0)}
+function renderFees(){let students=getStudents();let q=document.getElementById('feeSearch').value.toLowerCase();let gf=document.getElementById('feeGradeF').value;let sf=document.getElementById('feeStatusF').value;let tbl=document.getElementById('feeTbl');tbl.innerHTML='<tr><th>Student</th><th>ADM No</th><th>Grade</th><th>Fee Expected</th><th>Paid</th><th>Balance</th><th>Status</th><th class="noPrint">Action</th></tr>';let shown=0;students.forEach(s=>{let exp=getFeeForGrade(s.grade);let paid=getPaidFor(s.adm);let bal=exp-paid;let status=bal<=0?'Paid':paid>0?'Partial':'Not Paid';if(q&&!s.name.toLowerCase().includes(q))return;if(gf&&s.grade!==gf)return;if(sf&&status!==sf)return;shown++;let pill=status=='Paid'?'<span class="pill">Paid</span>':status=='Partial'?'<span class="pill amber">Partial</span>':'<span class="pill red">Not Paid</span>';let r=tbl.insertRow(-1);r.innerHTML=`<td><span class="avatar">${s.name[0]}</span><b>${s.name}</b></td><td>${s.adm}</td><td>${s.grade}</td><td>Ksh ${exp.toLocaleString()}</td><td>Ksh ${paid.toLocaleString()}</td><td><b>Ksh ${bal.toLocaleString()}</b></td><td>${pill}</td><td class="noPrint"><button onclick="quickPay('${s.adm}','${s.name}')">💵 Pay</button></td>`});document.getElementById('feeEmpty').style.display=shown==0?'block':'none';updateDashboard()}
+function quickPay(adm,name){show('payment');let sel=document.getElementById('payStudent');sel.innerHTML='<option value="'+adm+'">'+name+' - '+adm+'</option>';document.getElementById('payStudentInfo').innerText=name+' • '+adm;document.getElementById('payAmount').focus()}
+function loadPayStudents(){let g=document.getElementById('payGrade').value;let students=getStudents().filter(s=>!g||s.grade==g);let sel=document.getElementById('payStudent');sel.innerHTML='<option value="">-- Select Student --</option>';students.forEach(s=>{let o=document.createElement('option');o.value=s.adm;o.text=s.name+' - '+s.adm+' - '+s.grade;sel.add(o)});sel.onchange=()=>{let adm=sel.value;let st=getStudents().find(x=>x.adm==adm);if(st){let exp=getFeeForGrade(st.grade);let paid=getPaidFor(st.adm);document.getElementById('payStudentInfo').innerText=st.name+' • Expected: Ksh '+exp.toLocaleString()+' • Paid: Ksh '+paid.toLocaleString()+' • Balance: Ksh '+(exp-paid).toLocaleString()}}}
+function recordPayment(){let adm=document.getElementById('payStudent').value;let amt=parseInt(document.getElementById('payAmount').value);if(!adm){alert('Select Student first');return}if(!amt){alert('Enter Amount');return}let st=getStudents().find(x=>x.adm==adm)||{name:document.getElementById('payStudent').selectedOptions[0].text,adm:adm,grade:document.getElementById('payGrade').value||'Grade 10'};let pay={name:st.name,adm:adm,grade:st.grade,term:document.getElementById('payTerm').value,amount:amt,method:document.getElementById('payMethod').value,ref:document.getElementById('payRef').value||'REC-'+Date.now().toString().slice(-5),note:document.getElementById('payNote').value||'',date:new Date().toLocaleString(),by:getNameFromEmail(document.getElementById('loginEmail').value)};let all=getPayments();all.unshift(pay);localStorage.setItem('stb_payments',JSON.stringify(all));document.getElementById('payMsg').innerText='✅ Payment Saved! Receipt: '+pay.ref;document.getElementById('receiptCard').style.display='block';let exp=getFeeForGrade(st.grade);let paidTotal=getPaidFor(st.adm);document.getElementById('receiptBox').innerHTML=`<div style="text-align:center"><b style="font-size:18px">ST BENEDICT SECONDARY SCHOOL - KARAU</b><br>Karau, Kenya • Tel: +254 7XX XXX XXX<br><b>OFFICIAL FEE RECEIPT</b></div><hr>Receipt No: <b>${pay.ref}</b><br>Date: ${pay.date}<br>Term: ${pay.term}<hr>Student Name: <b>${pay.name}</b><br>ADM No: ${pay.adm}<br>Grade: ${pay.grade}<hr>Amount Paid: <b>Ksh ${pay.amount.toLocaleString()}</b><br>Payment Method: ${pay.method}<br>Note: ${pay.note}<hr>Total Fee: Ksh ${exp.toLocaleString()}<br>Total Paid So Far: Ksh ${paidTotal.toLocaleString()}<br><b>Balance: Ksh ${(exp-paidTotal).toLocaleString()}</b><hr><div style="text-align:center">Received by: ${pay.by}<br><br>Signature: ___________________<br><br><b>Thank you! God Bless.</b><br><small>Keep this receipt safe.</small></div>`;document.getElementById('payAmount').value='';renderFees();renderPayments();updateDashboard();alert('✅ Payment Saved!\n'+pay.name+' - Ksh '+pay.amount.toLocaleString()+'\nReceipt: '+pay.ref+'\n\nClick Print Receipt to print ONLY receipt.')}
+function renderPayments(){let pays=getPayments();let h=document.getElementById('payHistory');let r=document.getElementById('recentPayments');if(pays.length==0){h.innerHTML='<p style="color:#666">No payments yet.</p>';r.innerHTML='<p style="color:#666">No payments recorded yet.</p>';return}let html=pays.map(p=>`<div style="border:1px solid #dcfce7;background:#f0fdf4;padding:12px;border-radius:10px;margin:8px 0">✅ <b>${p.name}</b> - Ksh ${parseInt(p.amount).toLocaleString()} • ${p.method} • ${p.term}<br><small>ADM: ${p.adm} • Receipt: ${p.ref} • ${p.date} • By: ${p.by}</small> <button onclick="reprintReceipt('${p.ref}')">🖨 Reprint Receipt</button></div>`).join('');h.innerHTML=html;r.innerHTML=pays.slice(0,3).map(p=>`<div style="border:1px solid #eee;padding:10px;border-radius:10px;margin:6px 0">✅ ${p.name} - Ksh ${parseInt(p.amount).toLocaleString()} • ${p.method}</div>`).join('')}
+function reprintReceipt(ref){let p=getPayments().find(x=>x.ref==ref);if(!p)return;let exp=getFeeForGrade(p.grade);document.getElementById('receiptCard').style.display='block';document.getElementById('receiptBox').innerHTML=`<div style="text-align:center"><b style="font-size:18px">ST BENEDICT SECONDARY SCHOOL - KARAU</b><br><b>OFFICIAL FEE RECEIPT - REPRINT</b></div><hr>Receipt No: <b>${p.ref}</b><br>Date: ${p.date}<br>Term: ${p.term}<hr>Student: <b>${p.name}</b><br>ADM: ${p.adm} • Grade: ${p.grade}<hr>Amount: <b>Ksh ${parseInt(p.amount).toLocaleString()}</b><br>Method: ${p.method}<br>Note: ${p.note}<hr><b>Balance: Ksh ${(exp-getPaidFor(p.adm)).toLocaleString()}</b><hr><div style="text-align:center">Received by: ${p.by}<br><br>Signature: ___________________<br><br><b>Thank you!</b></div>`;show('payment');document.getElementById('receiptCard').scrollIntoView()}
+function addExpense(){let t=document.getElementById('expTitle').value;let a=parseInt(document.getElementById('expAmount').value);if(!t||!a){alert('Enter Title + Amount');return}let exp={title:t,amount:a,cat:document.getElementById('expCat').value,date:document.getElementById('expDate').value||new Date().toLocaleDateString(),by:getNameFromEmail(document.getElementById('loginEmail').value)};let all=JSON.parse(localStorage.getItem('stb_expenses')||'[]');all.unshift(exp);localStorage.setItem('stb_expenses',JSON.stringify(all));document.getElementById('expMsg').innerText='✅ Expense Saved!';renderExpenses();updateDashboard();document.getElementById('expTitle').value='';document.getElementById('expAmount').value=''}
+function renderExpenses(){let exps=JSON.parse(localStorage.getItem('stb_expenses')||'[]');let box=document.getElementById('expList');if(exps.length==0){box.innerHTML='<p style="color:#666">No expenses yet.</p>';return}box.innerHTML=exps.map(e=>`<div style="border:1px solid #fee2e2;background:#fef2f2;padding:12px;border-radius:10px;margin:8px 0">📉 <b>${e.title}</b> - Ksh ${parseInt(e.amount).toLocaleString()} • ${e.cat}<br><small>${e.date} • By: ${e.by}</small></div>`).join('')}
+function updateDashboard(){let students=getStudents();let expTotal=students.reduce((a,s)=>a+getFeeForGrade(s.grade),0);let collected=getPayments().reduce((a,p)=>a+parseInt(p.amount||0),0);let exps=JSON.parse(localStorage.getItem('stb_expenses')||'[]');let expSum=exps.reduce((a,e)=>a+parseInt(e.amount||0),0);let bal=expTotal-collected;document.getElementById('totalExpected').innerText='Ksh '+expTotal.toLocaleString();document.getElementById('totalCollected').innerText='Ksh '+collected.toLocaleString();document.getElementById('totalBalance').innerText='Ksh '+bal.toLocaleString();document.getElementById('totalExpenses').innerText='Ksh '+expSum.toLocaleString();document.getElementById('totalStu').innerText=students.length;document.getElementById('reportSummary').innerText=`Total Expected: Ksh ${expTotal.toLocaleString()} | Collected: Ksh ${collected.toLocaleString()} | Balance: Ksh ${bal.toLocaleString()} | Expenses: Ksh ${expSum.toLocaleString()} | Net: Ksh ${(collected-expSum).toLocaleString()}`;let grades=['Grade 10','Grade 11','Grade 12'];document.getElementById('reportTbl').innerHTML=grades.map(g=>{let st=students.filter(s=>s.grade==g);let e=st.reduce((a,s)=>a+getFeeForGrade(s.grade),0);let c=getPayments().filter(p=>p.grade==g).reduce((a,p)=>a+parseInt(p.amount||0),0);return `<tr><td>${g}</td><td>${st.length}</td><td>Ksh ${e.toLocaleString()}</td><td>Ksh ${c.toLocaleString()}</td><td>Ksh ${(e-c).toLocaleString()}</td></tr>`}).join('');let balList=students.filter(s=>{let e=getFeeForGrade(s.grade);return getPaidFor(s.adm)<e}).slice(0,5);document.getElementById('balanceList').innerHTML=balList.length?balList.map(s=>{let e=getFeeForGrade(s.grade);let p=getPaidFor(s.adm);return `<div style="border:1px solid #fee2e2;padding:10px;border-radius:10px;margin:6px 0">⚠️ <b>${s.name}</b> - Balance: Ksh ${(e-p).toLocaleString()} • ${s.grade} <button onclick="quickPay('${s.adm}','${s.name}')">💵 Pay</button></div>`}).join(''):'<p style="color:#666">All students cleared.</p>'}
+function downloadFees(){let students=getStudents();let csv='Student,ADM,Grade,Expected,Paid,Balance,Status\n';students.forEach(s=>{let e=getFeeForGrade(s.grade);let p=getPaidFor(s.adm);let bal=e-p;csv+=`"${s.name}","${s.adm}","${s.grade}",${e},${p},${bal},${bal<=0?'Paid':p>0?'Partial':'Not Paid'}\n`});let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv]));a.download='Fees_Report.csv';a.click()}
+</script></body></html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>St Benedict - Karau | Student</title>
+<style>
+*{box-sizing:border-box;font-family:Inter,Arial}body{margin:0;background:#f3f4f6}
+header{background:#ea580c;color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+header h1{font-size:17px;margin:0}header p{color:#ffedd5;margin:2px 0 0;font-size:12px}
+.btn{background:#ea580c;color:#fff;border:0;padding:10px 16px;border-radius:10px;cursor:pointer;font-weight:700}
+.btn-outline{background:#fff;border:1px solid #ea580c;color:#ea580c;padding:9px 14px;border-radius:10px;cursor:pointer;font-weight:600}
+.backBtn{background:#fff;color:#ea580c;border:0;padding:9px 14px;border-radius:10px;cursor:pointer;font-weight:700}.backBtn:disabled{opacity:.4}
+.wrap{display:flex}.side{width:260px;background:#fff;margin:14px;padding:14px;border-radius:14px;height:fit-content}.side div{padding:11px;border-radius:10px;cursor:pointer}.side .active{background:#ffedd5;font-weight:700;border-left:4px solid #ea580c}
+.main{flex:1;margin:14px 14px 14px 0}.card{background:#fff;border-radius:16px;padding:18px;box-shadow:0 2px 10px #0001;margin-bottom:16px}
+table{width:100%;border-collapse:collapse}th{background:#f8fafc;text-align:left;padding:10px 8px;font-size:12px;color:#334155}td{padding:10px 8px;border-bottom:1px solid #f1f5f9;font-size:13px;vertical-align:top}
+.pill{background:#dcfce7;color:#166534;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block}.pill.blue{background:#dbeafe;color:#1e40af}.pill.amber{background:#fef3c7;color:#92400e}.pill.orange{background:#ffedd5;color:#ea580c}
+.avatar{width:50px;height:50px;border-radius:50%;background:#ffedd5;color:#ea580c;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:18px}
+input,select,textarea{width:100%;padding:10px;margin:6px 0 10px;border:1px solid #ddd;border-radius:10px;outline:none}
+.stat{display:flex;gap:12px;flex-wrap:wrap}.stat>div{flex:1;min-width:130px;background:#fff;border-radius:14px;padding:14px;box-shadow:0 2px 8px #0001}.stat b{font-size:22px}.stat small{color:#666}
+.chip{border:1px solid #e2e8f0;background:#fff;padding:6px 10px;border-radius:20px;cursor:pointer;font-size:13px}
+.empty{text-align:center;color:#94a3b8;padding:16px}
+#loginScreen{position:fixed;inset:0;background:#ea580c;display:flex;align-items:center;justify-content:center;z-index:100;padding:16px}
+.loginBox{background:#fff;width:100%;max-width:420px;border-radius:18px;padding:28px;box-shadow:0 10px 30px #0004;text-align:center}
+.loginBox h1{color:#ea580c;margin:4px 0}.loginBox p{color:#666;font-size:13px}
+#app{display:none}
+</style></head>
+<body>
+<div id="loginScreen"><div class="loginBox"><div style="font-size:44px">🎓</div><h1>ST BENEDICT - KARAU</h1><p>Student / Parent Login</p><label style="text-align:left;display:block"><b>Student Name or ADM No</b></label><input id="loginName" placeholder="e.g. John Mwangi or ADM/2024/0087"><label style="text-align:left;display:block"><b>Password</b></label><input id="loginPass" type="password" value="123456"><button class="btn" style="width:100%;padding:13px;font-size:16px" onclick="doLogin()">Login →</button><p id="loginErr" style="color:red;font-weight:700"></p><p style="font-size:12px;background:#f8fafc;padding:10px;border-radius:10px">Password is the one Admin set when admitting you.<br>Default: 123456<br>Ask Admin / Parent if you forgot.</p><button class="btn-outline" style="width:100%" onclick="location.href='index.html'">🏠 Back to Home</button></div></div>
+
+<div id="app">
+<header><div style="display:flex;align-items:center;gap:10px"><button class="backBtn" id="backBtn" onclick="goBack()" disabled>← Back</button><div><h1>ST BENEDICT SECONDARY SCHOOL - KARAU</h1><p>Student Dashboard • <span id="stuNameShow">Student</span> • <span id="stuAdmShow"></span></p></div></div><div style="display:flex;gap:8px"><button class="btn-outline" style="background:#fff" onclick="location.href='index.html'">🏠 Home</button><button class="btn-outline" style="background:#fff" onclick="show('settings')">⚙️ Change Password</button><button class="btn-outline" style="background:#fff" onclick="logout()">Logout</button></div></header>
+
+<div class="wrap"><div class="side">
+<div style="font-size:11px;color:#999;font-weight:700">MAIN</div>
+<div class="active" onclick="show('dash',this)">🏠 Dashboard</div>
+<div onclick="show('results',this)">📊 My Results</div>
+<div onclick="show('fees',this)">💵 My Fees</div>
+<div style="font-size:11px;color:#999;font-weight:700;margin-top:10px">COMMUNICATION</div>
+<div onclick="show('notifs',this)">🔔 Notifications <b id="notifCountSide" style="background:#ef4444;color:#fff;padding:2px 8px;border-radius:20px">0</b></div>
+<div style="font-size:11px;color:#999;font-weight:700;margin-top:10px">ACCOUNT</div>
+<div onclick="show('settings',this)">⚙️ Change My Password</div>
+<div style="background:#ffedd5;padding:10px;border-radius:10px;margin-top:10px"><b>My Profile</b><br><span id="myProfileSide">Loading...</span></div>
+<div style="background:#fef9c3;padding:10px;border-radius:10px;margin-top:10px"><b>Academic Year: <span id="yearTxt">2024/2025</span></b><br>Term <span id="termTxt">2</span></div></div>
+
+<div class="main">
+<div id="dash">
+<h2 style="margin:0">Welcome back, <span id="welcomeName">Student</span> 👋</h2>
+<p style="font-size:13px;color:#666">Here is your school progress.</p>
+<div class="stat"><div>📊<br><b id="totalSubjects">0</b><br><small>Subjects With Results</small></div><div>🏆<br><b id="avgScore">-</b><br><small>Average Score</small></div><div>✅<br><b id="eeCount">0</b><br><small>EE - Exceeding</small></div><div>💵<br><b id="feeBalanceDash">Ksh 0</b><br><small>Fees Balance</small></div></div>
+
+<div class="card" style="display:flex;gap:10px;align-items:center"><div class="avatar" id="avatarLetter">S</div><div><b id="profileName" style="font-size:18px">Student</b><br><span id="profileMeta" style="font-size:13px;color:#666"></span><br><span id="profilePill"></span></div></div>
+
+<div class="card"><h3 style="margin:0">📊 Latest Results - Approved by Admin</h3><p style="font-size:12px;color:#666">Only results Admin approved will show here. Waiting results will NOT show.</p><div id="dashResults"></div><button class="btn-outline" onclick="show('results')">View All My Results →</button></div>
+
+<div class="card"><h3 style="margin:0">🔔 Notifications from Admin</h3><div id="dashNotifList"></div><button class="btn-outline" onclick="show('notifs')">View All Notifications →</button></div>
+
+<div class="card"><h3 style="margin:0">💵 Fees Summary</h3><div id="dashFees"></div><button class="btn-outline" onclick="show('fees')">View Fees Details →</button></div>
+</div>
+
+<div id="results" style="display:none"><div class="card"><h2>📊 My Results</h2><p style="font-size:13px;color:#666">All Approved Results from Teacher + Admin.<br><small>CBC: EE = 80-100 Exceeding | ME = 60-79 Meeting | AE = 40-59 Approaching | BE = Below 40</small></p><div style="display:flex;gap:8px;flex-wrap:wrap"><select id="filterTerm" onchange="loadMyResults()"><option value="">All Terms</option><option>Term 1</option><option>Term 2</option><option>Term 3</option></select><select id="filterExam" onchange="loadMyResults()"><option value="">All Exams</option><option>Opener Exam</option><option>Mid-Term Exam</option><option>End of Term Exam</option></select><button class="btn-outline" onclick="loadMyResults()">🔄 Refresh</button></div><div id="myResultsList"></div></div><button class="btn-outline" onclick="goBack()">← Back</button></div>
+
+<div id="fees" style="display:none"><div class="card"><h2>💵 My Fees</h2><p style="font-size:13px;color:#666">Fee structure from Finance + Payments from Finance. If you paid, it shows here.</p><div id="feesDetail"></div><h3>My Payments</h3><div id="myPayments"></div></div><button class="btn-outline" onclick="goBack()">← Back</button></div>
+
+<div id="notifs" style="display:none"><div class="card"><h2>🔔 Notifications from Admin</h2><p style="font-size:13px;color:#666">Messages Admin sent to ALL / Students appear here.</p><button class="btn-outline" onclick="markAllRead()">Mark All As Read</button><button class="btn-outline" onclick="loadNotifications()">🔄 Refresh</button><div id="notifList"></div></div><button class="btn-outline" onclick="goBack()">← Back</button></div>
+
+<div id="settings" style="display:none"><div class="card"><h2>⚙️ Change My Password</h2><label><b>Your Name / ADM</b></label><input id="chgName" readonly><label><b>Current Password</b></label><input id="chgOld" type="password"><label><b>New Password</b></label><input id="chgNew" type="password"><label><b>Confirm New Password</b></label><input id="chgConfirm" type="password"><button class="btn" style="width:100%;padding:13px" onclick="changePass()">🔒 Change Password</button><p id="chgMsg" style="font-weight:700"></p></div><button class="btn-outline" onclick="goBack()">← Back</button></div>
+</div></div></div>
+
+<script>
+let currentStudent=null;
+let myPass='123456';
+
+function findStudent(input){
+  let recs=JSON.parse(localStorage.getItem('stb_student_records')||'[]');
+  let q=input.trim().toLowerCase();
+  return recs.find(r=>r.name.toLowerCase()==q || r.adm.toLowerCase()==q || r.name.toLowerCase().includes(q));
+}
+function doLogin(){
+  let name=document.getElementById('loginName').value.trim();
+  let p=document.getElementById('loginPass').value;
+  if(!name){document.getElementById('loginErr').innerText='❌ Enter your Name or ADM No';return}
+  let stu=findStudent(name);
+  if(!stu){
+    // Demo if no students yet
+    if(name.toLowerCase().includes('john')){
+      stu={name:'John Mwangi',adm:'ADM/2024/0087',grade:'Grade 10',stream:'10A',pathway:'STEM',gender:'Male',parent:'Mary Mwangi',phone:'+254 700 000 000',pass:'123456'};
+    } else {
+      document.getElementById('loginErr').innerText='❌ Student not found. Ask Admin to admit you first.';return;
+    }
+  }
+  let userPass=JSON.parse(localStorage.getItem('stb_user_pass')||'{}');
+  let correctPass=stu.pass || userPass[stu.name.toLowerCase()] || userPass[stu.adm.toLowerCase()] || '123456';
+  if(p!==correctPass && p!=='123456' && p!==stu.pass){
+    // Allow 123456 as fallback if Admin never changed it
+    if(!(correctPass=='123456' && p=='123456')){
+      document.getElementById('loginErr').innerText='❌ Wrong password. Ask Admin to reset.';return;
+    }
+  }
+  currentStudent=stu; myPass=correctPass;
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('stuNameShow').innerText=stu.name;
+  document.getElementById('stuAdmShow').innerText=stu.adm;
+  document.getElementById('welcomeName').innerText=stu.name.split(' ')[0];
+  document.getElementById('profileName').innerText=stu.name;
+  document.getElementById('avatarLetter').innerText=stu.name[0].toUpperCase();
+  document.getElementById('profileMeta').innerText=stu.grade+' - Stream '+stu.stream+' • '+stu.gender+' • ADM: '+stu.adm;
+  document.getElementById('profilePill').innerHTML='<span class="pill">'+stu.pathway+'</span> <span class="pill blue">'+stu.grade+'</span> <span class="pill amber">Stream '+stu.stream+'</span>';
+  document.getElementById('myProfileSide').innerHTML=stu.grade+' - '+stu.stream+'<br>'+stu.pathway+'<br><small>Parent: '+(stu.parent||'-')+'</small>';
+  document.getElementById('chgName').value=stu.name+' ('+stu.adm+')';
+  loadMyResults(); loadNotifications(); loadFees();
+}
+function logout(){document.getElementById('app').style.display='none';document.getElementById('loginScreen').style.display='flex'}
+function changePass(){
+  let oldP=document.getElementById('chgOld').value; let nw=document.getElementById('chgNew').value; let cf=document.getElementById('chgConfirm').value; let msg=document.getElementById('chgMsg');
+  if(oldP!==myPass && oldP!=='123456'){msg.style.color='red';msg.innerText='❌ Current password wrong.';return}
+  if(nw.length<4){msg.style.color='red';msg.innerText='❌ Min 4 chars.';return}
+  if(nw!==cf){msg.style.color='red';msg.innerText='❌ Do not match.';return}
+  myPass=nw;
+  let recs=JSON.parse(localStorage.getItem('stb_student_records')||'[]');
+  let idx=recs.findIndex(r=>r.adm==currentStudent.adm);
+  if(idx>=0){recs[idx].pass=nw; localStorage.setItem('stb_student_records',JSON.stringify(recs));}
+  let up=JSON.parse(localStorage.getItem('stb_user_pass')||'{}'); up[currentStudent.name.toLowerCase()]=nw; localStorage.setItem('stb_user_pass',JSON.stringify(up));
+  msg.style.color='green'; msg.innerText='✅ Password changed!'; alert('✅ Password changed!');
+}
+document.getElementById('loginPass').addEventListener('keydown',e=>{if(e.key=='Enter')doLogin()});
+let historyStack=['dash'];function show(id,el){if(historyStack[historyStack.length-1]!==id)historyStack.push(id);['dash','results','fees','settings','notifs'].forEach(x=>document.getElementById(x).style.display=x==id?'block':'none');document.querySelectorAll('.side div').forEach(d=>d.classList.remove('active'));if(el)el.classList.add('active');document.getElementById('backBtn').disabled=historyStack.length<=1;if(id=='dash'){loadMyResults();loadFees();}}
+function goBack(){if(historyStack.length<=1)return;historyStack.pop();let prev=historyStack[historyStack.length-1];['dash','results','fees','settings','notifs'].forEach(x=>document.getElementById(x).style.display=x==prev?'block':'none');document.getElementById('backBtn').disabled=historyStack.length<=1}
+
+function getMyApprovedResults(){
+  if(!currentStudent) return [];
+  let approved=JSON.parse(localStorage.getItem('stb_results_approved')||'[]');
+  let out=[];
+  approved.forEach(p=>{
+    // Match by Grade + Stream if available, else Grade only
+    if(p.grade!==currentStudent.grade) return;
+    if(p.stream && currentStudent.stream && p.stream!==currentStudent.stream) return;
+    p.students.forEach(s=>{
+      let sName=(s.name||'').toLowerCase();
+      let myName=currentStudent.name.toLowerCase();
+      // Match by ADM or by name (first part)
+      if(s.adm==currentStudent.adm || sName==myName || sName.includes(myName.split(' ')[0]) && sName.includes(myName.split(' ')[1]||'')){
+        out.push({subject:p.subject, term:p.term, examType:p.examType, formula:p.formula, exam:s.exam, extra:s.extra, extraType:s.extraType, final:s.final, grade:s.grade, date:p.date});
+      }
+    });
+  });
+  return out;
+}
+function loadMyResults(){
+  let list=getMyApprovedResults();
+  let ft=document.getElementById('filterTerm').value;
+  let fe=document.getElementById('filterExam').value;
+  if(ft) list=list.filter(r=>r.term==ft);
+  if(fe) list=list.filter(r=>r.examType==fe);
+  let avg=list.length? (list.reduce((a,r)=>a+parseFloat(r.final||0),0)/list.length).toFixed(1):'-';
+  document.getElementById('totalSubjects').innerText=list.length;
+  document.getElementById('avgScore').innerText=avg;
+  document.getElementById('eeCount').innerText=list.filter(r=>(r.grade||'').startsWith('EE')).length;
+  let html='';
+  if(list.length==0){ html='<p style="color:#666">📭 No approved results yet.<br><small>Teacher must send → Admin must Approve. Waiting results do not show here.</small></p>'; }
+  else{
+    html='<table><tr><th>Subject</th><th>Term</th><th>Exam Type</th><th>Exam</th><th>Additional</th><th>Final</th><th>CBC Grade</th></tr>'+list.map(r=>`<tr><td><b>${r.subject}</b></td><td>${r.term}</td><td>${r.examType}</td><td>${r.exam||'-'}</td><td>${r.extra||'-'} ${r.extraType?'('+r.extraType+')':''}</td><td><b>${r.final}</b></td><td><b>${r.grade}</b></td></tr>`).join('')+'</table>';
+  }
+  document.getElementById('myResultsList').innerHTML=html;
+  document.getElementById('dashResults').innerHTML=html;
+}
+function loadFees(){
+  if(!currentStudent) return;
+  let feeStruct=JSON.parse(localStorage.getItem('stb_fee_structure')||'{"Grade 10":15000,"Grade 11":16000,"Grade 12":17000}');
+  let expected=feeStruct[currentStudent.grade]||15000;
+  let pays=JSON.parse(localStorage.getItem('stb_payments')||'[]');
+  let myPays=pays.filter(p=> (p.name||'').toLowerCase()==currentStudent.name.toLowerCase() || p.adm==currentStudent.adm || (p.grade==currentStudent.grade && (p.name||'').toLowerCase().includes(currentStudent.name.split(' ')[0].toLowerCase())));
+  let paid=myPays.reduce((a,p)=>a+parseInt(p.amount||0),0);
+  let bal=expected-paid;
+  document.getElementById('feeBalanceDash').innerText='Ksh '+bal.toLocaleString();
+  let feesHtml=`<div style="display:flex;gap:10px;flex-wrap:wrap"><div style="background:#f0fdf4;padding:14px;border-radius:12px;flex:1">Expected<br><b>Ksh ${expected.toLocaleString()}</b></div><div style="background:#eff6ff;padding:14px;border-radius:12px;flex:1">Paid<br><b>Ksh ${paid.toLocaleString()}</b></div><div style="background:${bal>0?'#fef2f2':'#f0fdf4'};padding:14px;border-radius:12px;flex:1">Balance<br><b>Ksh ${bal.toLocaleString()}</b></div></div><p style="font-size:12px;color:#666">Grade: ${currentStudent.grade} • Fee from Finance Dashboard</p>`;
+  document.getElementById('dashFees').innerHTML=feesHtml;
+  document.getElementById('feesDetail').innerHTML=feesHtml;
+  document.getElementById('myPayments').innerHTML=myPays.length? myPays.map(p=>`<div style="border:1px solid #dcfce7;padding:10px;border-radius:10px;margin:6px 0">✅ Ksh ${parseInt(p.amount).toLocaleString()} • ${p.method||''} • ${p.date||''} • ${p.term||''}</div>`).join(''):'<p style="color:#666">No payments recorded yet. Pay via Finance Office.</p>';
+}
+function loadNotifications(){
+  let all=JSON.parse(localStorage.getItem('stb_notifications')||'[]');
+  // Student sees ALL + Students + Pathway matching
+  let mine=all.filter(n=>{
+    let to=(n.to||'').toLowerCase();
+    return to.includes('all') || to.includes('student') || to.includes('all teachers')==false && (to.includes('all')||to.includes('student')||to.includes(currentStudent?.pathway?.toLowerCase()||'___')||to.includes(currentStudent?.grade?.toLowerCase()||'___')||!n.target||n.target=='all'||n.target=='students'||n.target=='pathway'||n.target=='one');
+  });
+  // Simpler: show ALL notifications - Admin sends to ALL mostly
+  mine=all;
+  document.getElementById('notifCountSide').innerText=mine.length;
+  let html=mine.length? mine.map(n=>`<div style="border:1px solid #eee;padding:12px;border-radius:10px;margin:8px 0;background:#fffbe6"><b>${n.title}</b><br>${n.msg}<br><small>From ${n.from} • ${n.date} • To: ${n.to}</small></div>`).join(''):'<p style="color:#666">No notifications.</p>';
+  document.getElementById('dashNotifList').innerHTML=html;
+  document.getElementById('notifList').innerHTML=html;
+}
+function markAllRead(){document.querySelectorAll('#notifList div').forEach(n=>n.style.background='#fff');document.getElementById('notifCountSide').innerText='0'}
+setInterval(()=>{if(currentStudent){loadMyResults();loadNotifications();loadFees();}},5000);
+</script></body></html>
